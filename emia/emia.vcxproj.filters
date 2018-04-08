@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="core">
+      <UniqueIdentifier>{7e216efa-a158-4e72-85a9-4a76af1f50c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{c3e3564d-edfd-47e2-91ef-9764e80bf710}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="register.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="elf.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="emulator_impl.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="types.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="register.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="elf_parser.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="emulator.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

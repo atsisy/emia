@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "emia", "emia\emia.vcxproj", "{4D52B1C1-A942-4E18-B507-3643E75AE684}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Debug|ARM.ActiveCfg = Debug|ARM
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Debug|ARM.Build.0 = Debug|ARM
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Debug|x64.ActiveCfg = Debug|x64
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Debug|x64.Build.0 = Debug|x64
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Debug|x86.ActiveCfg = Debug|x86
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Debug|x86.Build.0 = Debug|x86
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Release|ARM.ActiveCfg = Release|ARM
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Release|ARM.Build.0 = Release|ARM
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Release|x64.ActiveCfg = Release|x64
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Release|x64.Build.0 = Release|x64
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Release|x86.ActiveCfg = Release|x86
+		{4D52B1C1-A942-4E18-B507-3643E75AE684}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6D76D1AB-C153-4376-8154-FE5A1A054917}
+	EndGlobalSection
+EndGlobal
