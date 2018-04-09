@@ -6,6 +6,10 @@ Emulator::Emulator(u64 mem_size, ElfParser & parser, u64 rsp)
 	: registers(parser.elf_header->e_entry)
 {
 	memory = new u8[mem_size];
+
+	/*
+	* メモリ上にマップされた実行ファイルを
+	*/
 	memcpy(memory + 0x400000, parser.mapped_addr, parser.file_info->st_size);
 }
 
