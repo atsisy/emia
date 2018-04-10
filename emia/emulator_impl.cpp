@@ -79,6 +79,9 @@ DirectiveTable::DirectiveTable()
 {
 	size_t i;
 
+	/*
+	* r0 ~ r15までのmov r64, imm64についての命令を格納
+	*/
 	for (i = 0; i < 16; ++i) {
 		directives.insert(std::make_pair((0x48 << 8) | (0xb8 + i), mov_r64_imm64));
 	}
@@ -90,15 +93,28 @@ DirectiveTable::~DirectiveTable()
 
 u64 DirectiveTable::mov_r64_imm64(Emulator &emulator)
 {
+	/*
+	* 最初のバイトに含まれるREXプレフィクスは飛ばす
+	* 64bit拡張であることはわかっている
+	*/
+
+	/*
+	* オペコード読み取り
+	* 仕様では0xb8 + rdとなっている
+	*/
 	u8 register_id = emulator.get_code8(1) - 0xb8;
+
+	/*
+	* 即値読み取り
+	* オペコードの後ろに64bitの即値がリトルエンディアンで格納されている
+	*/
 	u64 imm64 = emulator.get_code64(2);
+
+	// 値代入
 	*emulator.registers.ref_register64(register_id) = imm64;
-	
-}
 
-u64 Emulator::change_rip(i64 byte_offset)
-{
-
+	// 1 + 1 + 8 byte
+	emulator.change_rip(10);
 }
 
 void Emulator::execution_loop()

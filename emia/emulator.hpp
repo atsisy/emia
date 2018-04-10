@@ -49,8 +49,6 @@ public:
 	*/
 	Emulator(u64 mem_size, ElfParser & parser, u64 rsp);
 
-	void change_rip(i64 byte_offset);
-
 	void execution_loop();
 
 	~Emulator();

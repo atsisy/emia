@@ -85,4 +85,6 @@ public:
 	* 指定したレジスタのデータへのポインタ
 	*/
 	u64 *ref_register64(u16 register_id);
+
+	void print_status();
 };
