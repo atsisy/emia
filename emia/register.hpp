@@ -44,7 +44,7 @@ union RflagsRegister {
 	RflagsRegister() { this->rflags = 0; }
 };
 
-constexpr u16 GPR_COUNT = 15;
+constexpr u16 GPR_COUNT = 16;
 
 class Registers {
 
