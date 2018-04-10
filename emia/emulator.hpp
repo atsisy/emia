@@ -1,9 +1,34 @@
 #pragma once
 
+#include <unordered_map>
+#include <functional>
 #include "register.hpp"
 #include "elf_parser.hpp"
 
-class Emulator {
+class DirectiveTable {
+
+protected:
+	std::unordered_map<u64, std::function<u64(Emulator &)>> directives;
+
+	static u64 mov_r64_imm64(Emulator &emulator);
+
+public:
+	DirectiveTable();
+	~DirectiveTable();
+};
+
+class Emulator : public DirectiveTable {
+
+	friend DirectiveTable;
+
+private:
+	u8 get_code8(u64 byte_offset);
+	u16 get_code16(u64 byte_offset);
+	u32 get_code32(u64 byte_offset);
+	u64 get_code64(u64 byte_offset);
+
+	u64 change_rip(i64 offset);
+
 public:
 	/*
 	* レジスタ
@@ -23,6 +48,10 @@ public:
 	* u64 rsp: スタックポインタの初期値を指定する
 	*/
 	Emulator(u64 mem_size, ElfParser & parser, u64 rsp);
+
+	void change_rip(i64 byte_offset);
+
+	void execution_loop();
 
 	~Emulator();
 };
