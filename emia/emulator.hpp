@@ -5,12 +5,15 @@
 #include "register.hpp"
 #include "elf_parser.hpp"
 
+class Emulator;
+
 class DirectiveTable {
 
 protected:
-	std::unordered_map<u64, std::function<u64(Emulator &)>> directives;
+	std::unordered_map<u64, std::function<u64(Emulator *)>> directives;
 
-	static u64 mov_r64_imm64(Emulator &emulator);
+	static u64 mov_r64_imm64(Emulator *emulator);
+	static u64 jmp_rel8(Emulator *emulator);
 
 public:
 	DirectiveTable();
@@ -28,6 +31,10 @@ private:
 	u64 get_code64(u64 byte_offset);
 
 	u64 change_rip(i64 offset);
+	bool is_prefix(u8 code);
+	u8 *next_directive();
+
+	u64 get_opecode(u8 *top_of_memory);
 
 public:
 	/*

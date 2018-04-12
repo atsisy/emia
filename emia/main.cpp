@@ -12,6 +12,7 @@ int main(int argc, char **)
 		0xffffff
 	);
 
-	printf("ditic: %x\n", emu->memory[emu->registers.rip]);
+	emu->execution_loop();
+
 	return 0;
 }

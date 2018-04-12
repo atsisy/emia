@@ -68,7 +68,7 @@ u64 Emulator::get_code64(u64 byte_offset)
 	* リトルエンディアンで格納されているため、それを整数に戻す
 	*/
 	for (size_t i = 0; i < 8; ++i) {
-		ret |= get_code8(byte_offset + i) << (i << 3);
+		ret |= ((u64)get_code8(byte_offset + i)) << (i << 3);
 	}
 
 	return ret;
@@ -85,13 +85,15 @@ DirectiveTable::DirectiveTable()
 	for (i = 0; i < 16; ++i) {
 		directives.insert(std::make_pair((0x48 << 8) | (0xb8 + i), mov_r64_imm64));
 	}
+
+	directives.insert(std::make_pair(0xeb, jmp_rel8));
 }
 
 DirectiveTable::~DirectiveTable()
 {
 }
 
-u64 DirectiveTable::mov_r64_imm64(Emulator &emulator)
+u64 DirectiveTable::mov_r64_imm64(Emulator *emulator)
 {
 	/*
 	* 最初のバイトに含まれるREXプレフィクスは飛ばす
@@ -102,22 +104,94 @@ u64 DirectiveTable::mov_r64_imm64(Emulator &emulator)
 	* オペコード読み取り
 	* 仕様では0xb8 + rdとなっている
 	*/
-	u8 register_id = emulator.get_code8(1) - 0xb8;
+	u8 register_id = emulator->get_code8(1) - 0xb8;
 
 	/*
 	* 即値読み取り
 	* オペコードの後ろに64bitの即値がリトルエンディアンで格納されている
 	*/
-	u64 imm64 = emulator.get_code64(2);
+	u64 imm64 = emulator->get_code64(2);
 
 	// 値代入
-	*emulator.registers.ref_register64(register_id) = imm64;
+	*emulator->registers.ref_register64(register_id) = imm64;
 
 	// 1 + 1 + 8 byte
-	emulator.change_rip(10);
+	emulator->change_rip(10);
+
+	/*
+	* mov命令はrflagsを変化させない
+	*/
+	return emulator->registers.rflags.rflags;
+}
+
+u64 DirectiveTable::jmp_rel8(Emulator *emulator)
+{
+	constexpr u8 jmp_rel8_size = 2;
+
+	i8 rel8 = emulator->get_code8(1) + jmp_rel8_size;
+	emulator->registers.rip += rel8;
+	return emulator->registers.rflags.rflags;
+}
+
+u8 *Emulator::next_directive()
+{
+	return (u8 *)(memory + registers.rip);
+}
+
+bool Emulator::is_prefix(u8 code)
+{
+	/*
+	* REX prefixの上位4bitは0100で固定なのでここからprefixかを判定する
+	*/
+	return 0b0100 == (code >> 4);
+}
+
+u64 Emulator::get_opecode(u8 *top_of_memory)
+{
+	u64 code = 0;
+	u8 tmp_byte, count = 0;
+
+	top_of_memory = &memory[registers.rip];
+
+	do {
+		/*
+		* 命令取り出し
+		*/
+		tmp_byte = *top_of_memory++;
+
+		/*
+		* byteをcount * 8だけシフトしてorする
+		*/
+		code = (code << 8) | tmp_byte;
+
+		printf("opecoding -> %x\n", code);
+
+		if (!is_prefix(tmp_byte)) {
+			/*
+			* バイトコードがprefixでなかった場合、
+			* オペコードをcodeにorしてbreak
+			*/
+			break;
+		}
+	} while (++count);
+
+	return code;
 }
 
 void Emulator::execution_loop()
 {
+	u64 code, opecode;
+	u8 *top_memory;
 
+	do {
+		registers.print_status();
+
+		code = 0;
+		top_memory = next_directive();
+		opecode = get_opecode(top_memory);
+
+		printf("opecode -> %x\n", opecode);
+
+		directives.at(opecode)(this);
+	}while(1);
 }
