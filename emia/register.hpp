@@ -44,6 +44,22 @@ union RflagsRegister {
 	RflagsRegister() { this->rflags = 0; }
 };
 
+/*
+* ModR_M共用体
+* ModR/Mバイト
+*/
+union ModR_M {
+	struct {
+		u8 r_m : 3;
+		u8 reg : 3;
+		u8 mod : 2;
+	};
+
+	u8 modr_m;
+
+	ModR_M(u8 byte);
+};
+
 constexpr u16 GPR_COUNT = 16;
 
 class Registers {
