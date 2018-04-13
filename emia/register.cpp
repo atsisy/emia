@@ -28,3 +28,8 @@ void Registers::print_status()
 		printf("R%d: 0x%lx\n", i, read_register64(i));
 	}
 }
+
+ModR_M::ModR_M(u8 byte)
+{
+	modr_m = byte;
+}

@@ -87,6 +87,7 @@ DirectiveTable::DirectiveTable()
 	}
 
 	directives.insert(std::make_pair(0xeb, jmp_rel8));
+	directives.insert(std::make_pair(0x4883, add_rm64_imm8));
 }
 
 DirectiveTable::~DirectiveTable()
@@ -131,6 +132,45 @@ u64 DirectiveTable::jmp_rel8(Emulator *emulator)
 	i8 rel8 = emulator->get_code8(1) + jmp_rel8_size;
 	emulator->registers.rip += rel8;
 	return emulator->registers.rflags.rflags;
+}
+
+u64 DirectiveTable::add_rm64_imm8(Emulator *emulator)
+{
+	/*
+	* ModR_Mバイトを取得
+	*/
+	ModR_M modr_m(emulator->get_code8(2));
+
+	printf("MODRM -> %x\n", modr_m.modr_m);
+
+	/*
+	* 関連してくるレジスタへのポインタを取得（疑似。実際そんなもんはない）
+	*/
+	u64 *target_register = emulator->registers.ref_register64(modr_m.r_m);
+	i8 imm8 = emulator->get_code8(3);
+
+	printf("imm8 -> %d\n", imm8);
+	printf("MOD -> %d\n", modr_m.mod);
+
+	switch (modr_m.mod) {
+	case 0b000:
+		/*
+		* [register] <- add imm8
+		*/
+		*(u8 *)(*target_register) = imm8;
+		break;
+	case 0b0011:
+		/*
+		* register <- add imm8
+		*/
+		*target_register += imm8;
+		break;
+	default:
+		break;
+	}
+
+	// prefix + opecode + ModR_M + imm8
+	emulator->change_rip(4);
 }
 
 u8 *Emulator::next_directive()

@@ -15,6 +15,8 @@ protected:
 	static u64 mov_r64_imm64(Emulator *emulator);
 	static u64 jmp_rel8(Emulator *emulator);
 
+	static u64 add_rm64_imm8(Emulator *emulator);
+
 public:
 	DirectiveTable();
 	~DirectiveTable();
