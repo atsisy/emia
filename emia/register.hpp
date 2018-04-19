@@ -41,6 +41,10 @@ union RflagsRegister {
 	*/
 	u64 rflags;
 
+	u64 mask_without_sf();
+
+	void print_status();
+
 	RflagsRegister() { this->rflags = 0; }
 };
 

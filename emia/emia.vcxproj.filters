@@ -21,6 +21,9 @@
     <ClCompile Include="emulator_impl.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="exception_process.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="types.hpp">

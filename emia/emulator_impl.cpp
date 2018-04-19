@@ -3,7 +3,7 @@
 #include <cstring>
 
 Emulator::Emulator(u64 mem_size, ElfParser & parser, u64 rsp)
-	: registers(parser.elf_header->e_entry)
+	: registers(parser.elf_header->e_entry), DirectiveTable(), ExceptionTable()
 {
 	memory = new u8[mem_size];
 
@@ -141,16 +141,13 @@ u64 DirectiveTable::add_rm64_imm8(Emulator *emulator)
 	*/
 	ModR_M modr_m(emulator->get_code8(2));
 
-	printf("MODRM -> %x\n", modr_m.modr_m);
+	u64 rflags = emulator->registers.rflags.rflags;
 
 	/*
 	* 関連してくるレジスタへのポインタを取得（疑似。実際そんなもんはない）
 	*/
 	u64 *target_register = emulator->registers.ref_register64(modr_m.r_m);
 	i8 imm8 = emulator->get_code8(3);
-
-	printf("imm8 -> %d\n", imm8);
-	printf("MOD -> %d\n", modr_m.mod);
 
 	switch (modr_m.mod) {
 	case 0b000:
@@ -169,8 +166,13 @@ u64 DirectiveTable::add_rm64_imm8(Emulator *emulator)
 		break;
 	}
 
+	if (*target_register >> 63)
+		rflags |= 0x00000000000008;
+
 	// prefix + opecode + ModR_M + imm8
 	emulator->change_rip(4);
+
+	return rflags;
 }
 
 u8 *Emulator::next_directive()
@@ -230,8 +232,12 @@ void Emulator::execution_loop()
 		top_memory = next_directive();
 		opecode = get_opecode(top_memory);
 
-		printf("opecode -> %x\n", opecode);
+		printf("opecode -> %08lx\n", opecode);
 
-		directives.at(opecode)(this);
+		try {
+			registers.rflags.rflags = directives.at(opecode)(this);
+		} catch (const std::out_of_range&) {
+			exception_table.at(INVALID_OPERATION_EXCEPTION)(this);
+		}
 	}while(1);
 }

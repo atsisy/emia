@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClCompile Include="elf.cpp" />
     <ClCompile Include="emulator_impl.cpp" />
+    <ClCompile Include="exception_process.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="register.cpp" />
   </ItemGroup>

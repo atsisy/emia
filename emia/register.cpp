@@ -16,6 +16,15 @@ u64 Registers::read_register64(u16 register_id)
 	return gp_registers[register_id];
 }
 
+u64 RflagsRegister::mask_without_sf()
+{
+	return rflags & (u64)0x00000000000008;
+}
+
+void RflagsRegister::print_status()
+{
+	printf("Rflags: 0x%016lx\n", rflags);
+}
 
 u64 *Registers::ref_register64(u16 register_id)
 {
@@ -25,8 +34,10 @@ u64 *Registers::ref_register64(u16 register_id)
 void Registers::print_status()
 {
 	for (size_t i = 0; i < GPR_COUNT; ++i) {
-		printf("R%d: 0x%lx\n", i, read_register64(i));
+		printf("R%d: 0x%016lx\n", i, read_register64(i));
 	}
+
+	rflags.print_status();
 }
 
 ModR_M::ModR_M(u8 byte)

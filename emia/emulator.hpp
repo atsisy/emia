@@ -22,7 +22,23 @@ public:
 	~DirectiveTable();
 };
 
-class Emulator : public DirectiveTable {
+
+constexpr u64 INVALID_OPERATION_EXCEPTION = 0x90;
+
+class ExceptionTable {
+
+protected:
+	std::unordered_map<u64, std::function<void(Emulator *)>> exception_table;
+
+	static void invalid_operation(Emulator *emulator);
+
+public:
+	ExceptionTable();
+	~ExceptionTable();
+
+};
+
+class Emulator : public DirectiveTable, ExceptionTable {
 
 	friend DirectiveTable;
 
