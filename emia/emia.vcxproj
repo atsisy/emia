@@ -38,6 +38,7 @@
     <ClInclude Include="emulator.hpp" />
     <ClInclude Include="register.hpp" />
     <ClInclude Include="types.hpp" />
+    <ClInclude Include="utility_operation.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4d52b1c1-a942-4e18-b507-3643e75ae684}</ProjectGuid>

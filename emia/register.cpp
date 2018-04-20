@@ -16,9 +16,19 @@ u64 Registers::read_register64(u16 register_id)
 	return gp_registers[register_id];
 }
 
-u64 RflagsRegister::mask_without_sf()
+void RflagsRegister::setup_sf()
 {
-	return rflags & (u64)0x00000000000008;
+	sf = 1;
+}
+
+void RflagsRegister::setup_of()
+{
+	of = 1;
+}
+
+void RflagsRegister::setup_zf()
+{
+	zf = 1;
 }
 
 void RflagsRegister::print_status()

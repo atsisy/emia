@@ -1,5 +1,6 @@
 #include "emulator.hpp"
 #include "elf_parser.hpp"
+#include "utility_operation.hpp"
 #include <cstring>
 
 Emulator::Emulator(u64 mem_size, ElfParser & parser, u64 rsp)
@@ -83,7 +84,7 @@ DirectiveTable::DirectiveTable()
 	* r0 ~ r15までのmov r64, imm64についての命令を格納
 	*/
 	for (i = 0; i < 16; ++i) {
-		directives.insert(std::make_pair((0x48 << 8) | (0xb8 + i), mov_r64_imm64));
+		directives.insert(std::make_pair(utop::lshift_byte<u64>(0x48) | (0xb8 + i), mov_r64_imm64));
 	}
 
 	directives.insert(std::make_pair(0xeb, jmp_rel8));
@@ -94,7 +95,7 @@ DirectiveTable::~DirectiveTable()
 {
 }
 
-u64 DirectiveTable::mov_r64_imm64(Emulator *emulator)
+u8 DirectiveTable::mov_r64_imm64(Emulator *emulator)
 {
 	/*
 	* 最初のバイトに含まれるREXプレフィクスは飛ばす
@@ -122,26 +123,24 @@ u64 DirectiveTable::mov_r64_imm64(Emulator *emulator)
 	/*
 	* mov命令はrflagsを変化させない
 	*/
-	return emulator->registers.rflags.rflags;
+	return 0;
 }
 
-u64 DirectiveTable::jmp_rel8(Emulator *emulator)
+u8 DirectiveTable::jmp_rel8(Emulator *emulator)
 {
 	constexpr u8 jmp_rel8_size = 2;
 
 	i8 rel8 = emulator->get_code8(1) + jmp_rel8_size;
 	emulator->registers.rip += rel8;
-	return emulator->registers.rflags.rflags;
+	return 0;
 }
 
-u64 DirectiveTable::add_rm64_imm8(Emulator *emulator)
+u8 DirectiveTable::add_rm64_imm8(Emulator *emulator)
 {
 	/*
 	* ModR_Mバイトを取得
 	*/
 	ModR_M modr_m(emulator->get_code8(2));
-
-	u64 rflags = emulator->registers.rflags.rflags;
 
 	/*
 	* 関連してくるレジスタへのポインタを取得（疑似。実際そんなもんはない）
@@ -167,12 +166,12 @@ u64 DirectiveTable::add_rm64_imm8(Emulator *emulator)
 	}
 
 	if (*target_register >> 63)
-		rflags |= 0x00000000000008;
+		emulator->registers.rflags.setup_sf();
 
 	// prefix + opecode + ModR_M + imm8
 	emulator->change_rip(4);
 
-	return rflags;
+	return 0;
 }
 
 u8 *Emulator::next_directive()
@@ -204,7 +203,7 @@ u64 Emulator::get_opecode(u8 *top_of_memory)
 		/*
 		* byteをcount * 8だけシフトしてorする
 		*/
-		code = (code << 8) | tmp_byte;
+		code = utop::lshift_byte<u64>(code) | tmp_byte;
 
 		printf("opecoding -> %x\n", code);
 
@@ -235,7 +234,10 @@ void Emulator::execution_loop()
 		printf("opecode -> %08lx\n", opecode);
 
 		try {
-			registers.rflags.rflags = directives.at(opecode)(this);
+			if (directives.at(opecode)(this)) {
+				puts("abort");
+				exit(-1);
+			}
 		} catch (const std::out_of_range&) {
 			exception_table.at(INVALID_OPERATION_EXCEPTION)(this);
 		}

@@ -7,6 +7,10 @@
 */
 union RflagsRegister {
 
+private:
+	const static u64 bits_for_mask_without_sf = 0x0000000008;
+
+public:
 	/*
 	* 細かくbitでアクセス
 	*/
@@ -41,7 +45,10 @@ union RflagsRegister {
 	*/
 	u64 rflags;
 
-	u64 mask_without_sf();
+	void setup_sf();
+	void setup_of();
+	void setup_zf();
+
 
 	void print_status();
 
